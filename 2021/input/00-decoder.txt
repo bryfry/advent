@@ -1,0 +1,9 @@
+day: 01, 02, 03 ... 25
+
+[example|puzzel][part][input|solution]
+
+example: e1i, e1s, e2i, e2s,
+ puzzle: p1i, p1s, p2i, p2s,
+
+01-e1i.txt
+
