@@ -5,28 +5,25 @@ const fmt = std.fmt;
 pub fn main() !void {
     const stdin = io.getStdIn().reader();
     const allocator = std.heap.page_allocator;
-    var depthHistory = std.ArrayList(u8).init(allocator);
+    var depthHistory = std.ArrayList(u16).init(allocator);
     defer depthHistory.deinit();
 
     var buf: [1024]u8 = undefined;
     while (try stdin.readUntilDelimiterOrEof(&buf, '\n')) |line| {
-        const depth = fmt.parseUnsigned(u8, line, 10) catch {
+        const depth = fmt.parseUnsigned(u16, line, 10) catch {
+            std.debug.print("PARSE ERR: {s}\n", .{line});
             continue;
         };
-        std.debug.print("{d}\n", .{depth});
+        try depthHistory.append(depth);
     }
-
-
-    //while (true){
-    //    var line_buf: [20]u8 = undefined;
-    //    const amt = try stdin.read(&line_buf);
-    //    if (amt == line_buf.len) {
-    //        std.debug.print("Input too long: {d}!\n", .{amt});
-    //        continue;
-    //    }
-    //    const line = std.mem.trimRight(u8, line_buf[0..amt], "\r\n");
-    //        continue;
-    //    };
-    //    try depthHistory.append(depth);
-    //}
+    var inc: u16 = 0;
+    for (depthHistory.items) |d,i| {
+        if (i > 0) {
+            const prev = depthHistory.items[i-1];
+            if (prev < d){
+                inc += 1;
+            }
+        }
+    }
+    std.debug.print("{d}\n", .{inc});
 }
