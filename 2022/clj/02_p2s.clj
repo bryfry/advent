@@ -1,7 +1,7 @@
 (require '[clojure.string :as str])
 
-(def e1i (slurp "../input/02-e1i.txt"))
-(def p1i (slurp "../input/02-p1i.txt"))
+(def e2i (slurp "../input/02-e2i.txt"))
+(def p2i (slurp "../input/02-p2i.txt"))
 
 (def loss 0)
 (def draw 3)
@@ -30,24 +30,33 @@
     (= char "A") rock
     (= char "B") paper
     (= char "C") scissor
-    (= char "X") rock
-    (= char "Y") paper
-    (= char "Z") scissor))
+    (= char "X") loss
+    (= char "Y") draw
+    (= char "Z") win))
 
 (defn translate
-  "translate input values into RPS, part 1"
-  [coll]
-  (map RPS coll))
+  "translate input values into RPS, part 2"
+  [input]
+  (let [opponent-choice (RPS (nth input 0)) outcome (RPS (nth input 1))]
+    (cond
+      (= outcome draw) [opponent-choice opponent-choice]
+      (and (= opponent-choice rock) (= outcome loss)) [opponent-choice scissor]
+      (and (= opponent-choice rock) (= outcome win)) [opponent-choice paper]
+      (and (= opponent-choice paper) (= outcome loss)) [opponent-choice rock]
+      (and (= opponent-choice paper) (= outcome win)) [opponent-choice scissor]
+      (and (= opponent-choice scissor) (= outcome loss)) [opponent-choice paper]
+      (and (= opponent-choice scissor) (= outcome win)) [opponent-choice rock]
+      )))
 
-(defn p1s
+(defn p2s
   ([input]
    (->> input
         str/split-lines             ; newline split
         (map #(str/split % #" "))   ; split on space
-        (map #(translate %))     ; turn ascii into RPS values
+        (map #(translate %))        ; turn ascii into values
         (map #(score %))            ; score each round
-        (apply +))))                ; sum scores
+        (apply +)
+        )))                ; sum scores
 
-
-(println "e1i" (p1s e1i))
-(println "p1i" (p1s p1i))
+(println "e2i" (p2s e2i))
+(println "p2i" (p2s p2i))
