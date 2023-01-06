@@ -55,8 +55,7 @@
         (map #(str/split % #" "))   ; split on space
         (map #(translate %))        ; turn ascii into values
         (map #(score %))            ; score each round
-        (apply +)
-        )))                ; sum scores
+        (apply +))))                ; sum scores
 
 (println "e2i" (p2s e2i))
 (println "p2i" (p2s p2i))
