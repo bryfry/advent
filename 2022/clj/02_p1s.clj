@@ -44,7 +44,7 @@
    (->> input
         str/split-lines             ; newline split
         (map #(str/split % #" "))   ; split on space
-        (map #(translate %))     ; turn ascii into RPS values
+        (map #(translate %))        ; turn ascii into RPS values
         (map #(score %))            ; score each round
         (apply +))))                ; sum scores
 
