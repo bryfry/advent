@@ -69,42 +69,43 @@ func part1(input []string) (solution int) {
 }
 
 func unSpellOut(s string) string {
-	found := false
 	digits := map[string]string{
-		"one":   "1",
-		"two":   "2",
-		"three": "3",
-		"four":  "4",
-		"five":  "5",
-		"six":   "6",
-		"seven": "7",
-		"eight": "8",
-		"nine":  "9",
+		"one":   "one1one",
+		"two":   "two2two",
+		"three": "three3three",
+		"four":  "four4four",
+		"five":  "five5five",
+		"six":   "six6six",
+		"seven": "seven7seven",
+		"eight": "eight8eight",
+		"nine":  "nine9nine",
 	}
-	for k, v := range digits {
-		s = strings.ReplaceAll(s, k, v)
-		strings.Index()
+
+	for k := range digits {
+		s = strings.ReplaceAll(s, k, digits[k])
 	}
 	return s
 }
 
+// 1tbbsmdhtwonedtt
 func part2(input []string) (solution int) {
 	sum := 0
 	for _, line := range input {
-		line = unSpellOut(line)
+		fixedLine := unSpellOut(line)
 		first := ""
 		last := ""
-		for _, c := range line {
+		for _, c := range fixedLine {
 			if _, err := strconv.Atoi(string(c)); err == nil {
 				//num = append(num, string(c))
 				if first == "" {
 					first = string(c)
+				} else {
+					last = string(c)
 				}
-				last = string(c)
 			}
 		}
 		value, err := strconv.Atoi(strings.Join([]string{first, last}, ""))
-		fmt.Println(line, value)
+		fmt.Printf("%40s %40s %10d\n", line, fixedLine, value)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -126,26 +127,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//p2, err := InputPuzzle(1, 2)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 	fmt.Println("Example 1:", part1(e1))
 	fmt.Println("Puzzle  1:", part1(p1))
 	fmt.Println("Example 2:", part2(e2))
-	//fmt.Println("Puzzle  2:", part2(p2))
-	
+	p2, err := InputPuzzle(1, 2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Puzzle  2:", part2(p2))
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
