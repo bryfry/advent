@@ -1,14 +1,23 @@
-default: run
+default: run-all
 
-build: 
-	go build -o bin/01 01/main.go
-	go build -o bin/02 02/main.go
+clean: 
+	@echo "cleaning up"
+	@rm -f bin/*
 
-run: clean build
+build-all:
+	just build 01
+	just build 02
+
+run-all: clean build-all 
 	bin/01
 	bin/02
 
-clean: 
-	rm -f bin/*
+build day: 
+	go build -o bin/{{day}} {{day}}/main.go
+
+run day: clean
+	just build {{day}}
+	bin/{{day}}
+
 
 # vim: set ft=make :
