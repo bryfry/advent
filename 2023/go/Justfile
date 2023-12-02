@@ -1,0 +1,14 @@
+default: run
+
+build: 
+	go build -o bin/01 01/main.go
+	go build -o bin/02 02/main.go
+
+run: clean build
+	bin/01
+	bin/02
+
+clean: 
+	rm -f bin/*
+
+# vim: set ft=make :
