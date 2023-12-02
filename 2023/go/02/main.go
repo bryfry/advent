@@ -6,15 +6,22 @@ import (
 	"strings"
 )
 
-type instance struct {
+// A collection of cubes
+// Can be used to represent:
+// - A constraint (e.g. maxCubes)
+// - A collected state (e.g. minCubes)
+// - An instance of a revield set of cubes
+type bag struct {
 	blue  int
 	red   int
 	green int
 }
 
+// Game stuct containing mutliple instances of 
+// subsets of cubes that were revealed from the bag
 type game struct {
-	id        int
-	instances []instance
+	id   int
+	bags []bag
 }
 
 const (
@@ -23,7 +30,7 @@ const (
 	red   = "red"
 )
 
-func (i instance) valid(maxCubes instance) bool {
+func (i bag) valid(maxCubes bag) bool {
 	if i.blue > maxCubes.blue {
 		return false
 	}
@@ -36,18 +43,22 @@ func (i instance) valid(maxCubes instance) bool {
 	return true
 }
 
-func (i instance) power() int {
+func (i bag) power() int {
 	return i.green * i.red * i.blue
 }
 
-func parseInstances(input string) (instances []instance) {
+// Example input:
+// Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+func parseGame(input string) game {
+	input = strings.TrimPrefix(input, "Game ")
+	idSplit := strings.Split(input, ":")
+	id, _ := strconv.Atoi(idSplit[0])
 
-	instances = []instance{}
+	bags := []bag{}
+	bagString := strings.Split(idSplit[1], ";")
+	for _, iString := range bagString {
 
-	instanceString := strings.Split(input, ";")
-	for _, iString := range instanceString {
-
-		i := instance{}
+		i := bag{}
 		cubes := strings.Split(iString, ",")
 		for _, c := range cubes {
 
@@ -63,71 +74,67 @@ func parseInstances(input string) (instances []instance) {
 				i.green, _ = strconv.Atoi(countSplit[0])
 			}
 		}
-		instances = append(instances, i)
+		bags = append(bags, i)
 	}
-	return instances
-}
 
-func parseGame(input string) game {
-	s := strings.TrimPrefix(input, "Game ")
-	split := strings.Split(s, ":")
-	id, _ := strconv.Atoi(split[0])
-	instancesString := split[1]
 	return game{
-		id:        id,
-		instances: parseInstances(instancesString),
+		id:   id,
+		bags: bags,
 	}
 }
 
 func solvePart1(input []string) (solution int) {
-	sum := 0
+	solution = 0
+	maxCubes := bag{
+		blue:  14,
+		red:   12,
+		green: 13,
+	}
 	for _, line := range input {
-		maxCubes := instance{
-			blue:  14,
-			red:   12,
-			green: 13,
-		}
-		g := parseGame(line)
+		game := parseGame(line)
 		valid := true
-		for _, i := range g.instances {
-			if !i.valid(maxCubes) {
+		for _, bag := range game.bags {
+			if !bag.valid(maxCubes) {
 				valid = false
+				break
 			}
 		}
 		if valid {
-			sum = sum + g.id
+			solution += game.id
 		}
 	}
-	return sum
+	return solution
 }
 
+// Show that you can maintain state across bags in a game
+// Find the minimum number of cubes of each color across bags
 func solvePart2(input []string) (solution int) {
-	sum := 0
+	solution = 0
 	for _, line := range input {
-		minCubes := instance{
+		minCubes := bag{
 			blue:  0,
 			red:   0,
 			green: 0,
 		}
 		g := parseGame(line)
-		for _, i := range g.instances {
-			if i.blue > minCubes.blue {
-				minCubes.blue = i.blue
+		for _, bag := range g.bags {
+			if bag.blue > minCubes.blue {
+				minCubes.blue = bag.blue
 			}
-			if i.red > minCubes.red {
-				minCubes.red = i.red
+			if bag.red > minCubes.red {
+				minCubes.red = bag.red
 			}
-			if i.green > minCubes.green {
-				minCubes.green = i.green
+			if bag.green > minCubes.green {
+				minCubes.green = bag.green
 			}
 		}
-		sum = sum + minCubes.power()
+		solution += minCubes.power()
 	}
-	return sum
+	return solution
 }
 
 func main() {
-	day := 2
+	day := aoc.Day2
 	aoc.SolveExample(day, aoc.Part1, solvePart1, 8)
 	aoc.SolvePuzzle(day, aoc.Part1, solvePart1, 2447)
 	aoc.SolveExample(day, aoc.Part2, solvePart2, 2286)

@@ -78,7 +78,8 @@ func solvePart2(input []string) (solution int) {
 }
 
 func main() {
-	day := 1
+	day := aoc.Day1
+	// parameters: int day, int part, solve function, expected int
 	aoc.SolveExample(day, aoc.Part1, solvePart1, 142)
 	aoc.SolvePuzzle(day, aoc.Part1, solvePart1, 56397)
 	aoc.SolveExample(day, aoc.Part2, solvePart2, 281)
