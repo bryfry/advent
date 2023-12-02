@@ -47,12 +47,10 @@ func InputPuzzle(day int, part int) (input []string, err error) {
 func part1(input []string) (solution int) {
 	sum := 0
 	for _, line := range input {
-		//num := []string{}
 		first := ""
 		last := ""
 		for _, c := range line {
 			if _, err := strconv.Atoi(string(c)); err == nil {
-				//num = append(num, string(c))
 				if first == "" {
 					first = string(c)
 				}
@@ -68,47 +66,71 @@ func part1(input []string) (solution int) {
 	return sum
 }
 
-func unSpellOut(s string) string {
+func unSpellOut(s string) int {
+	type digitIndex struct {
+		digit string
+		index int
+	}
+	firstIndex := map[string]int{}
+	lastIndex := map[string]int{}
 	digits := map[string]string{
-		"one":   "one1one",
-		"two":   "two2two",
-		"three": "three3three",
-		"four":  "four4four",
-		"five":  "five5five",
-		"six":   "six6six",
-		"seven": "seven7seven",
-		"eight": "eight8eight",
-		"nine":  "nine9nine",
+		"one":   "1",
+		"1":     "1",
+		"two":   "2",
+		"2":     "2",
+		"three": "3",
+		"3":     "3",
+		"four":  "4",
+		"4":     "4",
+		"five":  "5",
+		"5":     "5",
+		"six":   "6",
+		"6":     "6",
+		"seven": "7",
+		"7":     "7",
+		"eight": "8",
+		"8":     "8",
+		"nine":  "9",
+		"9":  "9",
 	}
 
 	for k := range digits {
-		s = strings.ReplaceAll(s, k, digits[k])
+		f := strings.Index(s, k)
+		if f != -1 {
+			firstIndex[k] = f
+		}
+		l := strings.LastIndex(s, k)
+		if l != -1 {
+			lastIndex[k] = l
+		}
 	}
-	return s
+	first := digitIndex{digit: "", index: 5000}
+	last := digitIndex{digit: "", index: -1}
+	for k, v := range firstIndex {
+		if v < first.index {
+			first = digitIndex{digit: k, index: v}
+		}
+	}
+	for k, v := range lastIndex {
+		if v > last.index {
+			last = digitIndex{digit: k, index: v}
+		}
+	}
+	if first.index == last.index {
+		value, _ := strconv.Atoi(digits[first.digit])
+		fmt.Printf("%40s %v %v %d\n", s, first, last, value)
+		return value
+	}
+	value, _ := strconv.Atoi(strings.Join([]string{digits[first.digit], digits[last.digit]}, ""))
+	fmt.Printf("%40s %v %v %d\n", s, first, last, value)
+	return value
 }
 
 // 1tbbsmdhtwonedtt
 func part2(input []string) (solution int) {
 	sum := 0
 	for _, line := range input {
-		fixedLine := unSpellOut(line)
-		first := ""
-		last := ""
-		for _, c := range fixedLine {
-			if _, err := strconv.Atoi(string(c)); err == nil {
-				//num = append(num, string(c))
-				if first == "" {
-					first = string(c)
-				} else {
-					last = string(c)
-				}
-			}
-		}
-		value, err := strconv.Atoi(strings.Join([]string{first, last}, ""))
-		fmt.Printf("%40s %40s %10d\n", line, fixedLine, value)
-		if err != nil {
-			log.Fatal(err)
-		}
+		value := unSpellOut(line)
 		sum = sum + value
 	}
 	return sum
