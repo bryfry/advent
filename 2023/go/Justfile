@@ -7,10 +7,12 @@ clean:
 build-all:
 	just build 01
 	just build 02
+	just build 03
 
 run-all: clean build-all 
 	bin/01
 	bin/02
+	bin/03
 
 build day: 
 	go build -o bin/{{day}} {{day}}/main.go

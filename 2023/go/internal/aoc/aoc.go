@@ -77,14 +77,14 @@ func (i Input) Calculate() (err error) {
 
 	solution := i.Solve(input)
 	if i.Expected == UnknownExpected {
-		fmt.Printf("%-6d\n", solution)
+		fmt.Printf("%8d\n", solution)
 		return nil
 	}
 	if solution != i.Expected {
-		fmt.Printf("%-6d ❌\n", solution)
+		fmt.Printf("%8d ❌\n", solution)
 		return nil
 	}
-	fmt.Printf("%-6d ✅\n", solution)
+	fmt.Printf("%8d ✅\n", solution)
 	return nil
 }
 
