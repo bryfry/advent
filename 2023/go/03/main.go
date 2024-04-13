@@ -2,6 +2,8 @@ package main
 
 import (
 	"advent2023/internal/aoc"
+	"advent2023/internal/grid"
+
 	"strconv"
 	"strings"
 	"unicode"
@@ -9,13 +11,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type cord struct {
-	x int
-	y int
-}
 
 type board struct {
-	grid     map[cord]uuid.UUID
+	grid     map[grid.Coord]uuid.UUID
 	parts    map[uuid.UUID]part
 	included map[uuid.UUID]part
 	symbols  []symbol
@@ -28,8 +26,8 @@ type part struct {
 }
 
 type symbol struct {
+	grid.Coord
 	repr string
-	cord cord
 }
 
 type gear struct {
@@ -40,7 +38,7 @@ type gear struct {
 
 func parseBoard(input []string) (b board) {
 	b = board{
-		grid:     map[cord]uuid.UUID{},
+		grid:     map[grid.Coord]uuid.UUID{},
 		parts:    map[uuid.UUID]part{},
 		included: map[uuid.UUID]part{},
 		symbols:  []symbol{},
@@ -54,7 +52,7 @@ func parseBoard(input []string) (b board) {
 
 			if unicode.IsDigit(col) {
 				partSB.WriteRune(col)
-				b.grid[cord{x, y}] = partID
+				b.grid[grid.Coord{X:x, Y:y}] = partID
 				// only continue if not at end of row
 				if x < len(row)-1 {
 					continue
@@ -78,13 +76,19 @@ func parseBoard(input []string) (b board) {
 			}
 
 			// symbol remaning, store it
-			b.symbols = append(b.symbols, symbol{repr: string(col), cord: cord{x, y}})
+			s := symbol{
+				repr: string(col), 
+				Coord: grid.Coord{X:x, Y:y},
+			}
+			b.symbols = append(b.symbols, s)
 		}
 	}
-	for _, s := range b.symbols {
 
+	// find included numbers via symbols
+	// find gears via "*" symbols
+	for _, s := range b.symbols {
 		neighbors := map[uuid.UUID]part{}
-		for _, c := range s.cord.neighbors() {
+		for _, c := range s.Coord.Neighbors() {
 			if id, ok := b.grid[c]; ok {
 				b.included[id] = b.parts[id]
 				neighbors[id] = b.parts[id]
@@ -102,20 +106,6 @@ func parseBoard(input []string) (b board) {
 		}
 	}
 	return b
-}
-
-func (c cord) neighbors() (cords []cord) {
-	cords = []cord{
-		{c.x - 1, c.y - 1},
-		{c.x - 1, c.y},
-		{c.x - 1, c.y + 1},
-		{c.x, c.y - 1},
-		{c.x, c.y + 1},
-		{c.x + 1, c.y - 1},
-		{c.x + 1, c.y},
-		{c.x + 1, c.y + 1},
-	}
-	return cords
 }
 
 func solvePart1(input []string) (solution int) {

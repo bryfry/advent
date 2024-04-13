@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 const (
-	example = "e"
-	puzzle  = "p"
+	Example = InputType("e")
+	Puzzle  = InputType("p")
 
 	Part1 = Part(1)
 	Part2 = Part(2)
@@ -47,18 +48,30 @@ type InputType string
 type Day int
 type Part int
 
-type solve func([]string) int
+type Solve func([]string) int
+
+type ProblemId struct {
+	Day  Day
+	Part Part
+}
 
 type Input struct {
-	Day      Day
-	Part     Part
+	ProblemId
+	Solve
 	Type     InputType
-	Solve    solve
 	Expected int
 }
 
-func (i Input) Calculate() (err error) {
+func (i Input) String() string {
+	var t string = "Example"
+	if i.Type == Puzzle {
+		t = "Puzzle"
+	}
+	return fmt.Sprintf("Day %02d, Part %d %7s: ", i.Day, i.Part, t)
 
+}
+
+func (i Input) Calculate() (err error) {
 	inputFilename := fmt.Sprintf("../input/%02d-%s%d.txt", i.Day, i.Type, i.Part)
 	input := []string{}
 	file, err := os.Open(inputFilename)
@@ -88,12 +101,37 @@ func (i Input) Calculate() (err error) {
 	return nil
 }
 
-func SolveExample(day Day, part Part, fn solve, expected int) {
-	fmt.Printf("Day %02d, Part %d Example: ", day, part)
+func EventDay(year int) (day int) {
+
+	start := time.Date(year, time.December, 1, 0, 0, 0, 0, time.UTC)
+	now := time.Now()
+	end := time.Date(year, time.December, 25, 0, 0, 0, 0, time.UTC)
+
+	if now.After(end) {
+		return 25
+	}
+	if now.Before(start) {
+		return 0
+	}
+	return now.Day()
+}
+
+func ReleasedDays(year int) (days []Day) {
+	today := EventDay(year)
+	days = []Day{}
+	for d := 1; d <= today; d++ {
+		days = append(days, Day(d))
+	}
+	return days
+}
+
+func SolveExample(day Day, part Part, fn Solve, expected int) {
 	i := Input{
-		Day:      day,
-		Part:     part,
-		Type:     example,
+		ProblemId: ProblemId{
+			Day:  day,
+			Part: part,
+		},
+		Type:     Example,
 		Solve:    fn,
 		Expected: expected,
 	}
@@ -103,12 +141,13 @@ func SolveExample(day Day, part Part, fn solve, expected int) {
 	}
 }
 
-func SolvePuzzle(day Day, part Part, fn solve, expected int) {
-	fmt.Printf("Day %02d, Part %d Puzzle:  ", day, part)
+func SolvePuzzle(day Day, part Part, fn Solve, expected int) {
 	i := Input{
-		Day:      day,
-		Part:     part,
-		Type:     puzzle,
+		ProblemId: ProblemId{
+			Day:  day,
+			Part: part,
+		},
+		Type:     Puzzle,
 		Solve:    fn,
 		Expected: expected,
 	}

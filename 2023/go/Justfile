@@ -14,6 +14,9 @@ run-all: clean build-all
 	bin/02
 	bin/03
 
+template day:
+	cp -r template {{day}}
+
 build day: 
 	go build -o bin/{{day}} {{day}}/main.go
 

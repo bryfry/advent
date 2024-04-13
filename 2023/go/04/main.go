@@ -13,7 +13,7 @@ func solvePart2(input []string) (solution int) {
 }
 
 func main() {
-	day := aoc.Day1
+	day := 3
 	aoc.SolveExample(day, aoc.Part1, solvePart1, 0)
 	aoc.SolvePuzzle(day, aoc.Part1, solvePart1, aoc.UnknownExpected)
 	aoc.SolveExample(day, aoc.Part2, solvePart2, 0)
