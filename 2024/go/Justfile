@@ -1,0 +1,24 @@
+default: run-all
+
+clean: 
+	@echo "cleaning up"
+	@rm -f bin/*
+
+build-all:
+	just build 01
+
+run-all: clean build-all 
+	bin/01
+
+template day:
+	cp -r template {{day}}
+
+build day: 
+	go build -o bin/{{day}} {{day}}/main.go
+
+run day: clean
+	just build {{day}}
+	bin/{{day}}
+
+
+# vim: set ft=make :
