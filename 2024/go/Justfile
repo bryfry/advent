@@ -6,9 +6,13 @@ clean:
 
 build-all:
 	just build 01
+	just build 02
+	just build 03
 
 run-all: clean build-all 
 	bin/01
+	bin/02
+	bin/03
 
 template day:
 	cp -r template {{day}}

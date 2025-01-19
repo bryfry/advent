@@ -1,7 +1,7 @@
 package main
 
 import (
-	"advent2024/internal/aoc"
+	"advent/internal/aoc"
 )
 
 func solvePart1(input []string) (solution int) {
